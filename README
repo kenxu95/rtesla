@@ -1,0 +1,10 @@
+
+a_1, a_2 are uniformly sampled polynomials
+
+KEY GENERATION
+- Sample polynomials s, e_1, e_2 according to the discrete Gaussian distribution
+- Check e_1 and e_2: reject if \sum{k=1}{w} max_k(e_i) is greater than L for at least one
+- sk = (s, e_1, e_2), pk = (t_1, t_2) = (a_1 * s + e_1, a_2 * s + e_2)
+
+
+
