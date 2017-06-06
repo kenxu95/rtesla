@@ -3,10 +3,21 @@
 #include <algorithm>
 #include <numeric>
 #include <functional>
+#include "sha256.h"
+#include <string>
+#include <sstream>
+
+// static void printVector(vector<int>& vec){
+//   for (unsigned int i = 0; i < vec.size(); i++){
+//     cout << vec[i] << ", ";
+//   }
+//   cout << endl; 
+// }
 
 RingTesla::RingTesla() {
   n = 512;
-  w = 19;
+  // w = 19;
+  w = 16;
   sigma = 52;
   B = (1 << 22) - 1;
   d = 23;
@@ -56,6 +67,19 @@ bool RingTesla::checkE(vector<int>& e){
   return accumulate(e.end() - w, e.end(), 0) > L;
 }
 
+int RingTesla::performModOnVal(int val, unsigned int magnitudeMod){
+  int valToMod = val < 0 ? (-1 * val) : val;
+  int moddedVal = valToMod % (magnitudeMod);
+  return val < 0 ? (-1 * moddedVal) : moddedVal;
+}
+
+/* Performs mod of q */
+void RingTesla::performMod(vector<int>& vec){
+  for(unsigned int i = 0; i < vec.size(); i++){
+    vec[i] = performModOnVal(vec[i], q / 2);
+  }
+}
+
 /* Perform multiplication on two polynomials in the ring R/(x^n + 1) */
 vector<int> RingTesla::multiplyPolynomials(vector<int>& vec1, vector<int>& vec2){
   vector<int> result(n, 0);
@@ -76,10 +100,18 @@ vector<int> RingTesla::addPolynomials(vector<int>& vec1, vector<int>& vec2){
   return result;
 }
 
+vector<int> RingTesla::subtractPolynomials(vector<int>& vec1, vector<int>& vec2){
+  vector<int> result(n);
+  transform(vec1.begin(), vec1.end(), vec2.begin(), result.begin(), std::minus<int>());
+  return result;
+}
+
 /* Calculates a * s + e */
 vector<int> RingTesla::calculateT(vector<int>& a, vector<int>& s, vector<int>& e){
   vector<int> multResult = multiplyPolynomials(a, s); 
-  return addPolynomials(multResult, e);
+  vector<int> result = addPolynomials(multResult, e);
+  performMod(result);
+  return result;
 }
 
 void RingTesla::keyGen(){
@@ -101,13 +133,126 @@ void RingTesla::keyGen(){
   pk = make_tuple(t1, t2); 
 }
 
-/* Signs a message with the secret key */
-void RingTesla::sign(string message){
+bool RingTesla::checkW(vector<int>& w){
+  unsigned int magnitudeMod = 1 << (d - 1);
+  unsigned int magnitudeModCheck = (1 << (d - 1)) - L;
+  for (unsigned int i = 0; i < w.size(); i++){
+    int moddedW = performModOnVal(w[i], magnitudeMod); 
+    if (abs(moddedW) > magnitudeModCheck){
+      return false;
+    }
+  } 
+  return true;
+}
 
-  /* Sample y uniformly from R_{q, {B}} */
-  vector<int> y = sampleZqPolynomial(true);
+bool RingTesla::checkZ(vector<int>& z_vec){
+  unsigned int magnitude = B - U;
+  for (unsigned int i = 0; i < z_vec.size(); i++){
+    if (abs(z_vec[i]) > magnitude){
+      return false;
+    }
+  }
+  return true;
+}
+
+vector<int> RingTesla::encoding(string hashResult){
+  unsigned int numIndexBits = (unsigned int)log2(n); /* is 9 */
+  unsigned int blockSize = 256 / w; /* is 16 */
+
+  /* For each block, encode a single element in result */
+  vector<int> result(n);
+  for(int i = 0; i < w; i++){
+    string blockStr = hashResult.substr(i * (blockSize / 4), blockSize / 4); /* divide by 4 because hexadecimal */
+    unsigned int x;
+    std::stringstream ss;
+    ss << hex << blockStr;
+    ss >> x;
+
+    unsigned int signBitTest = (1 << (blockSize - 1));
+    bool sign = x & signBitTest; // Gets most significant bit
+    unsigned int index = (x & (~signBitTest)) >> (blockSize - numIndexBits);
+    result[index] = sign ? 1 : -1;
+  }
+  return result;
+}
+
+int RingTesla::roundVal(int val, unsigned int magnitudeMod){
+  int diff = val - performModOnVal(val, magnitudeMod);
+  return performModOnVal(diff, magnitudeMod);
+}
+
+string RingTesla::hash(string message, vector<int>& v1, vector<int>& v2){
+  string toHash = message;
+  for (unsigned int i = 0; i < v1.size(); i++){
+    toHash += to_string(roundVal(v1[i], 1 << (d - 1)));
+  }
+  for (unsigned int i = 0; i < v2.size(); i++){
+    toHash += to_string(roundVal(v2[i], 1 << (d - 1))); 
+  }
+
+  string hashResult = sha256(toHash);
+  return hashResult;
+}
+
+/* Signs a message with the secret key. The result is stored in c_prime and z */
+tuple<vector<int>, string> RingTesla::sign(string message){
+  vector<int> w1;
+  vector<int> w2;
+  vector<int> z;
+  string c_prime;
+
+  do{
+    /* Sample y uniformly from R_{q, {B}} */
+    vector<int> y = sampleZqPolynomial(true);
+
+    /* Calculate v1 and v2 */
+    vector<int> v1 = multiplyPolynomials(a1, y);
+    performMod(v1);
+    vector<int> v2 = multiplyPolynomials(a2, y);
+    performMod(v2);
+
+    /* TODO: Generate the ciphertext with the hash and encoding functions */
+    c_prime = hash(message, v1, v2);
+    vector<int> c = encoding(c_prime);
+
+    /* Calculate z */
+    vector<int> s_c = multiplyPolynomials(get<0>(sk), c);
+    z = addPolynomials(y, s_c);
+
+    /* Rejection Sampling */
+    vector<int> e1_c = multiplyPolynomials(get<1>(sk), get<0>(sk));
+    w1 = subtractPolynomials(v1, e1_c);
+    performMod(w1);
+    vector<int> e2_c = multiplyPolynomials(get<2>(sk), get<0>(sk));
+    w2 = subtractPolynomials(v2, e2_c);
+    performMod(w2);
+
+  }while (!checkW(w1) || !checkW(w2) || !checkZ(z));
+
+  cout << "sign:\t" << c_prime << endl;
+  return make_tuple(z, c_prime);
+}
+
+/* Verify */
+bool RingTesla::verify(string message, vector<int>& z, string c_prime){
+  vector<int> c = encoding(c_prime);
+
+  /* Calculate w1 and w2 */
+  vector<int> a1_z = multiplyPolynomials(a1, z);
+  vector<int> t1_c = multiplyPolynomials(get<0>(pk), c);
+  vector<int> w1 = subtractPolynomials(a1_z, t1_c);
+  performMod(w1);
+
+  vector<int> a2_z = multiplyPolynomials(a2, z);
+  vector<int> t2_c = multiplyPolynomials(get<1>(pk), c);
+  vector<int> w2 = subtractPolynomials(a2_z, t2_c);
+  performMod(w2); 
 
 
+  /* Calculate c_verify */
+  string c_verify = hash(message, w1, w2);
+  cout << "verify:\t" << c_verify << endl;
+  return (c_prime.compare(c_verify) == 0) && checkZ(z);
 }
 
 

@@ -34,16 +34,24 @@ private:
   vector<int> a2; 
 
   /* Keys */
-  tuple<vector<int>, vector<int>, vector<int> > sk;
-  tuple<vector<int>, vector<int> > pk;
+  tuple<vector<int>, vector<int>, vector<int> > sk; /* (s, e1, e2) */
+  tuple<vector<int>, vector<int> > pk; /* (t1, t2) */
 
   /* Methods */ 
   vector<int> sampleZqPolynomial(bool useB);
   vector<int> sampleGaussianPolynomial();
-  bool checkE(vector<int>& e);
+  bool checkE(vector<int>& e); /* for keygen */
+  bool checkW(vector<int>& w); /* for signing */
+  bool checkZ(vector<int>& z_vec);
+  int performModOnVal(int val, unsigned int magnitudeMod);
+  void performMod(vector<int>& vec);
+  int roundVal(int val, unsigned int magnitudeMod);
   vector<int> multiplyPolynomials(vector<int>& vec1, vector<int>& vec2);
+  vector<int> subtractPolynomials(vector<int>& vec1, vector<int>& vec2); 
   vector<int> addPolynomials(vector<int>& vec1, vector<int>& vec2); 
   vector<int> calculateT(vector<int>& a, vector<int>& s, vector<int>& e);
+  string hash(string message, vector<int>& v1, vector<int>& v2);
+  vector<int> encoding(string hashResult);
 
 public:
   RingTesla();
@@ -52,10 +60,11 @@ public:
   vector<int> getA2(){return a2;}
  
   void keyGen();
-  vector<int> getT1(){return get<0>(pk);}
-  vector<int> getT2(){return get<1>(pk);}
+  tuple<vector<int>, vector<int> > getPK(){return pk;} /* Public key is accessible */
 
-  void sign(string message);
+  tuple<vector<int>, string> sign(string message);
+  bool verify(string message, vector<int>& z, string c_prime);
+
 
   void test();
 };
