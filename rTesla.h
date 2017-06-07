@@ -20,12 +20,10 @@ private:
   unsigned int L; // Polynomial threshold (for verifying e_1 and e_2)
   unsigned int q;
   unsigned int lambda; // Security parameter, which is < kappa < length
+  unsigned int kappa; // Output length of hash function
 
-  //int kappa; // Output length of hash function
-
-  // Hash H: hashes to length kappa
-  // Encoding function F: takes hash output and maps to vector of length n and weight w
-
+  /* Random Number Generator */
+  /* TODO: Is not necessarily cryptographically secure */
   unsigned timeSeed = chrono::system_clock::now().time_since_epoch().count();
   default_random_engine generator;
 
@@ -64,9 +62,6 @@ public:
 
   tuple<vector<int>, string> sign(string message);
   bool verify(string message, vector<int>& z, string c_prime);
-
-
-  void test();
 };
 
 #endif

@@ -16,8 +16,7 @@
 
 RingTesla::RingTesla() {
   n = 512;
-  // w = 19;
-  w = 16;
+  w = 16; /* original paper set value to 19 */
   sigma = 52;
   B = (1 << 22) - 1;
   d = 23;
@@ -25,6 +24,7 @@ RingTesla::RingTesla() {
   L = 2766;
   q = 39960577;
   lambda = 128;
+  kappa = 256;
 
   generator.seed(timeSeed);
 }
@@ -157,7 +157,7 @@ bool RingTesla::checkZ(vector<int>& z_vec){
 
 vector<int> RingTesla::encoding(string hashResult){
   unsigned int numIndexBits = (unsigned int)log2(n); /* is 9 */
-  unsigned int blockSize = 256 / w; /* is 16 */
+  unsigned int blockSize = kappa / w; /* is 16 */
 
   /* For each block, encode a single element in result */
   vector<int> result(n);
@@ -229,7 +229,7 @@ tuple<vector<int>, string> RingTesla::sign(string message){
 
   }while (!checkW(w1) || !checkW(w2) || !checkZ(z));
 
-  cout << "sign:\t" << c_prime << endl;
+  // cout << "sign:\t" << c_prime << endl;
   return make_tuple(z, c_prime);
 }
 
@@ -251,38 +251,8 @@ bool RingTesla::verify(string message, vector<int>& z, string c_prime){
 
   /* Calculate c_verify */
   string c_verify = hash(message, w1, w2);
-  cout << "verify:\t" << c_verify << endl;
+  // cout << "verify:\t" << c_verify << endl;
   return (c_prime.compare(c_verify) == 0) && checkZ(z);
-}
-
-
-void RingTesla::test(){
-
-  /* KeyGen: CheckE() test */
-  // vector<int> test= {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 23, 24, 25, 26};
-  // shuffle(test.begin(), test.end(), generator);
-
-  /* KeyGen: t generation test */
-  // int a = 3;
-  // vector<int> b = {3, 2, 1};
-  // vector<int> c = {10, 20, 30};
-  // vector<int> result = generateT(a, b, c);
-  // for (unsigned int i = 0; i < b.size(); i++){
-  //   cout << result[i] << " ";
-  // }
-  // cout << endl;
-
-  // cout << a << endl;
-
-  // for (unsigned int i = 0; i < b.size(); i++){
-  //   cout << b[i] << " ";
-  // }
-  // cout << endl; 
-
-  // for (unsigned int i = 0; i < b.size(); i++){
-  //   cout << c[i] << " ";
-  // }
-  // cout << endl; 
 }
 
 
