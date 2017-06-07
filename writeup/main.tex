@@ -30,7 +30,7 @@
 \date{}
 
 %make title bold and 14 pt font (Latex default is non-bold, 16 pt)
-\title{\Large \bf Implementation and Comparison of Lattice-Based Signature Scheme Ring-Tesla with ECSDA}
+\title{\Large \bf Implementation of Lattice-Based Signature Scheme Ring-Tesla and Comparison with ECSDA}
 
 %for single author (just remove % characters)
 \author{
@@ -46,22 +46,21 @@
 
 
 \subsection*{Abstract}
-In search of efficient post-quantum alternative signature schemes, lattice-based schemes like BLISS and GLP have become promising fields of research. In this paper we provide an open-source implementation of the Ring-TESLA scheme \cite{rTesla}, which is based on the TESLA signature scheme by Alkim et al. \cite{Tesla}. Ring-TESLA is not only as efficient as the BLISS and GLIP schemes, but also has provably secure instantiation.
+In search of efficient post-quantum alternative signature schemes, lattice-based schemes like BLISS and GLP have become promising fields of research. In this paper we provide an open-source implementation of the Ring-TESLA scheme \cite{rTesla}, which is based on the TESLA signature scheme by Alkim et al. \cite{Tesla}. Ring-TESLA is not only theoretically as efficient as the BLISS and GLIP schemes, but also has provably secure instantiation.\\
+We compare the speed of our Ring-Tesla implementation with an ECDSA implementation for two different security levels.
 
 \section{Introduction}
-Our implementation closely follows the description provided by Akleylet et al. 2016. Ring-TESLA has a tight security reduction from the R-LWE problem. As long as R-LWE is computationally hard, Ring-Tesla is unforgeable against the chosen-message attack. \cite{rTesla}
+Our implementation closely follows the description provided by Akleylet et al. 2016. Ring-TESLA has a security reduction from the R-LWE problem \cite{reduction} \endnote{Gus Gutoski and Chris Peikert discovered a mistake in the tight security reduction from the R-LWE problem to TESLA presented in the referenced paper. The mistake, however, does not yet lead to any attack against TESLA. The non-tight security reduction given by Bai and Galbraith still holds.}. As long as R-LWE is computationally hard, Ring-Tesla is unforgeable against the chosen-message attack. \cite{rTesla}
 
 \subsection{Advantages over BLISS and GLP}
 Ring-Tesla has a stronger security argument since it achieves both good performance with provably secure instantiation, while BLISS and GLP can only achieve one or the other. Provably secure instantiation means parameters are chosen according to the security reduction \cite{rTesla}. \\
 Moreover, Ring-Tesla uses uniform-sampling during signature generation, unlike BLISS, which uses Gaussian-sampling, generally assumed to be vulnerable to timing attacks. Comparing the resilience of BLISS, GLP, and Ring-TESLA to fault attacks in Bindel et al. 2016 \cite{faultAttacks} found that the Ring-TESLA scheme was sensitive to a strict subset of fault attacks affecting the BLISS and GLP.
 
-\subsection{Security Issues}
-
 
 \section{Ring-Tesla Signature Scheme}
 Ring-Tesla is parameterized by a number of integers: $n, \omega, d, B, q, U, L, \kappa$ and the security parameter $\lambda$ where $n > \kappa > \lambda$. $n$ is a positive power of $2$ and $q$ is a prime where $q = 1 (\mod 2n)$. \\
 The quotient ring of polynomials we work with is defined as $\textscr{R}_q = \mathds{Z}_q[x] / (x^n + 1)$ - in other words, all polynomials of degree up to $n-1$ with coefficients in the range $(-\frac{q}{2}, \frac{q}{2})$.
-The signature scheme also uses a Gaussian distribution $D_{\sigma}$ (with standard deviation $\sigma$), a Hash function $H : {0, 1}^* \rightarrow ^\kappa$, and an encoding function $F$ which maps the binary output of $H$ to a vector of length $n$ and weight $\omega$. We implemented a similar encoding scheme as found in Gneysu et al. \cite{encoding}\\
+The signature scheme also uses a Gaussian distribution $D_{\sigma}$ (with standard deviation $\sigma$), a Hash function $H : \{0, 1\}^* \rightarrow \{0, 1\}^\kappa$, and an encoding function $F$ which maps the binary output of $H$ to a vector of length $n$ and weight $\omega$. We implemented a similar encoding scheme as found in Gneysu et al. \cite{encoding}\\
 
 We provide a mathematical overview of the Ring-Tesla algorithm below:
 
@@ -69,7 +68,7 @@ We provide a mathematical overview of the Ring-Tesla algorithm below:
 $a_1$ and $a_2$ are global polynomials uniformly sampled from $\textscr{R}_q$.
 
 \subsection{Key Generation}
-The pseudocode below is pulled from Akleylet et al. \cite{rTesla}
+The pseudocode below is borrowed from Akleylet et al. \cite{rTesla}
 {\tt \small
   \begin{lstlisting}[mathescape, columns=flexible]
     KeyGen($1^\lambda$;$a_1$,$a_2$):
@@ -88,7 +87,7 @@ We first sample three polynomials $s$, $e_1$, and $e_2$ from Gaussian distributi
 A polynomial passes the checkE function if the sum of its $\omega$ largest coefficients is less than $L$.\\
 
 \subsection{Sign}
-The pseudocode below is pulled from Akleylet et al. \cite{rTesla}
+The pseudocode below is borrowed from Akleylet et al. \cite{rTesla}
 {\tt \small
   \begin{lstlisting}[mathescape, columns=flexible]
     Sign($\mu$;$a_1$,$a_2$,s,$e_1$,$e_2$):
@@ -114,7 +113,7 @@ The pseudocode below is pulled from Akleylet et al. \cite{rTesla}
   Before returning, however, we apply rejection sampling by making sure the coefficients of polynomials $w_1$, $w_2$, and $z$ are not too large.
 
 \subsection{Verify}
-The pseudocode below is pulled from Akleylet et al. \cite{rTesla} and is similar to the reverse of sign().
+The pseudocode below is borrowed from Akleylet et al. \cite{rTesla} and is similar to the reverse of sign().
 
 {\tt \small
   \begin{lstlisting}[mathescape, columns=flexible]
@@ -133,31 +132,52 @@ The pseudocode below is pulled from Akleylet et al. \cite{rTesla} and is similar
 We implemented the Ring-Tesla signature scheme in C++ and compared its speed with that of a ECDSA C++ implementation.
 
 \subsection{Selection of Parameters}
-We selected mostly the same provably secure parameters as Akleylet et al. \cite{rTesla} described, which theoretically provides $128$-bit security. \\
-We changed the value of $\omega$ from $19$ to $16$ for easier implementation. Below are our selected parameters:\\
+We selected mostly the same provably secure parameters as Akleylet et al. \cite{rTesla} described, for two security levels: $80$-bit and $128$-bit. Like the paper, we will name them RingTesla-I and RingTesla-II respectively.
+We changed the value of $\omega$ to $16$ for easier implementation. Below are our selected parameters:\\
 
 \resizebox{\columnwidth}{!}{
-\begin{tabular}{c | c c c c c c c c}
-  Security (bit) & $n$ & $\sigma$ & $\textscr{L}$ & $\omega$ & $\textscr{B}$ & $\textscr{U}$ & $d$ & $q$\\
+\begin{tabular}{c c | c c c c c c c c}
+  Parameter set & Security bits & $n$ & $\sigma$ & $\textscr{L}$ & $\omega$ & $\textscr{B}$ & $\textscr{U}$ & $d$ & $q$\\
   \hline
-  $128$ & $512$ & $52$ & $2766$ & $16$ & $2^{22}$ - $1$ & $3173$ & $23$ & $39960577$
+  RingTesla-I & $80$ & $512$ & $30$ & $814$ & $16$ & $2^{21} - 1$ & $993$ & $21$ & $8399873$\\
+  RingTesla-II & $128$ & $512$ & $52$ & $2766$ & $16$ & $2^{22} - 1$ & $3173$ & $23$ & $39960577$
 \end{tabular}
 }
 
 \subsection{Code}
-Our implementation (along with benchmark tests) is available at: \\
+Our implementation is available at: \\
 https://github.com/kenxu95/rtesla\\
 
+The code also contains speed an soundness tests (in main.cc).
 
-\section{Performance Comparison Results}
-TODO
+\section{Performance Results}
+We ran and compared the speed of the three methods KeyGen(), Sign(), and Verify() on 10,000 random string messages of 500 characters. We measured the speed in cpu time. To calculate the speed of each call, we averaged over all 10,000 trials for each method. Below are the results (in milliseconds per call):\\
+
+\resizebox{\columnwidth}{!}{
+\begin{tabular}{c | c c c c c c c c}
+  Signature Scheme & KeyGen & Sign & Verify \\
+  \hline
+  \textbf{Ring-Tesla-I} & $2.61$ & $16.20$ & $4.99$ \\
+  \textbf{Ring-Tesla-II} & $2.49$ & $15.30$ & $4.82$ \\
+  ECDSA w/ secp160r1 & $0.92$ & $1.03$ & $1.08$ \\
+  \textbf{ECDSA w/ secp192r1} & $0.67$ & $1.07$ & $1.15$ \\
+  ECDSA w/ secp224r1 & $1.71$ & $1.89$ & $2.05$ \\
+  \textbf{ECDSA w/ secp256r1} & $2.81$ & $2.99$ & $3.29$ \\
+  ECDSA w/ secp256k1 & $2.14$ & $2.30$ & $2.35$ \\
+\end{tabular}
+}\\
+
+We compared our Ring-Tesla implementation against five different ECDSA curves, each providing a different level of bit security. While the trend is for the ECDSA algorithm to take more time when providing more bits of security, the same cannot be said for Ring-Tesla.\\
+
+We are mainly interested in curves secp192r1 and secp256r1, which provide $80$ and $128$ bits of security respectively, just like our Ring-Tesla parameter sets.\\
+It is clear that Ring-Tesla is significantly slower when signing, possibly due to rejection sampling. For $80$-bit security, key generation and verification in ECDSA are a few times faster. However, for $128$-bit security, the gap between the two schemes shrinks significantly. It is possible that, with sufficient optimization, Ring-Tesla can match the speed of ECSDA key generation and verification.
 
 
 {\footnotesize \bibliographystyle{acm}
 \bibliography{main}}
 
 
-% \theendnotes
+\theendnotes
 
 \end{document}
 

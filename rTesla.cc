@@ -15,16 +15,29 @@
 // }
 
 RingTesla::RingTesla() {
+  // RingTesla-I parameters
   n = 512;
-  w = 16; /* original paper set value to 19 */
-  sigma = 52;
-  B = (1 << 22) - 1;
-  d = 23;
-  U = 3173;
-  L = 2766;
-  q = 39960577;
-  lambda = 128;
+  w = 16; /* original paper set value to 11 */
+  sigma = 30;
+  B = (1 << 21) - 1;
+  d = 21;
+  U = 993;
+  L = 814;
+  q = 8399873;
+  lambda = 80;
   kappa = 256;
+
+  // RingTesla-II parameters
+  // n = 512;
+  // w = 16; /* original paper set value to 19 */
+  // sigma = 52;
+  // B = (1 << 22) - 1;
+  // d = 23;
+  // U = 3173;
+  // L = 2766;
+  // q = 39960577;
+  // lambda = 128;
+  // kappa = 256;
 
   generator.seed(timeSeed);
 }

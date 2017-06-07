@@ -12,6 +12,10 @@
 \newblock Tesla: Tightly-secure efficient signatures from standard lattices.
 \newblock In {\em Cryptology ePrint Archive\/} (2015).
 
+\bibitem{reduction}
+{\sc Alkim, E., Bindel, N., Buchmann, J., and \"{O}zg\"{u}r Dagdelen}.
+\newblock Tesla: Tightly-secure efficient signatures from standard lattices.
+
 \bibitem{faultAttacks}
 {\sc Bindel, N., Buchmann, J.~A., and Krämer, J.}
 \newblock Lattice-based signature schemes and their sensitivity to fault

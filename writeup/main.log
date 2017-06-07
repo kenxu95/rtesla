@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2015.5.24)  7 JUN 2017 02:02
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2015.5.24)  7 JUN 2017 03:07
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -497,52 +497,50 @@ LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <9> not available
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <7> not available
 (Font)              Font shape `OT1/ptm/b/n' tried instead on input line 41.
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <10> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 62.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 53.
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <7.4> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 62.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 53.
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <6> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 62.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 53.
+\openout3 = `main.ent'.
 
 
-LaTeX Warning: Command \textscr invalid in math mode on input line 63.
 
-LaTeX Font Info:    Try loading font information for T3+ptm on input line 63.
+LaTeX Warning: Command \textscr invalid in math mode on input line 62.
+
+LaTeX Font Info:    Try loading font information for T3+ptm on input line 62.
 (/usr/local/texlive/2015/texmf-dist/tex/latex/tipa/t3ptm.fd
 File: t3ptm.fd 2001/12/31 TIPA font definitions
 )
 
-LaTeX Warning: Command \textscr invalid in math mode on input line 63.
+LaTeX Warning: Command \textscr invalid in math mode on input line 62.
 
-LaTeX Font Info:    Try loading font information for U+dsrom on input line 63.
+LaTeX Font Info:    Try loading font information for U+dsrom on input line 62.
 (/usr/local/texlive/2015/texmf-dist/tex/latex/doublestroke/Udsrom.fd
 File: Udsrom.fd 1995/08/01 v0.1 Double stroke roman font definitions
 )
 Missing character: There is no ö in font zptmcm7t!
 
-Underfull \hbox (badness 1142) in paragraph at lines 62--65
+Underfull \hbox (badness 1142) in paragraph at lines 61--64
 \OT1/ptm/m/n/10 The quo-tient ring of poly-no-mi-als we work with is
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 62--65
+Underfull \hbox (badness 10000) in paragraph at lines 61--64
 
  []
 
 
-Underfull \vbox (badness 6032) has occurred while \output is active []
+LaTeX Warning: Command \textscr invalid in math mode on input line 68.
 
 
-
-LaTeX Warning: Command \textscr invalid in math mode on input line 69.
-
-
-LaTeX Warning: Command \textscr invalid in math mode on input line 69.
+LaTeX Warning: Command \textscr invalid in math mode on input line 68.
 
 Missing character: There is no ö in font zptmcm7t!
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <5> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 75.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 74.
 
-Underfull \hbox (badness 10000) in paragraph at lines 87--89
+Underfull \hbox (badness 10000) in paragraph at lines 86--88
 
  []
 
@@ -551,33 +549,33 @@ Underfull \hbox (badness 10000) in paragraph at lines 87--89
 
 ]
 
-LaTeX Warning: Command \textscr invalid in math mode on input line 105.
+LaTeX Warning: Command \textscr invalid in math mode on input line 104.
 
-LaTeX Font Info:    Try loading font information for T3+cmtt on input line 105.
+LaTeX Font Info:    Try loading font information for T3+cmtt on input line 104.
 
 (/usr/local/texlive/2015/texmf-dist/tex/latex/tipa/t3cmtt.fd
 File: t3cmtt.fd 2001/12/31 TIPA font definitions
 )
 
-LaTeX Warning: Command \textscr invalid in math mode on input line 105.
+LaTeX Warning: Command \textscr invalid in math mode on input line 104.
 
 Missing character: There is no ö in font zptmcm7t!
 
-LaTeX Warning: Command \textscr invalid in math mode on input line 105.
+LaTeX Warning: Command \textscr invalid in math mode on input line 104.
 
 
-LaTeX Warning: Command \textscr invalid in math mode on input line 105.
-
-Missing character: There is no ö in font zptmcm7t!
-
-LaTeX Warning: Command \textscr invalid in math mode on input line 126.
-
-
-LaTeX Warning: Command \textscr invalid in math mode on input line 126.
+LaTeX Warning: Command \textscr invalid in math mode on input line 104.
 
 Missing character: There is no ö in font zptmcm7t!
 
-Underfull \hbox (badness 10000) in paragraph at lines 136--138
+LaTeX Warning: Command \textscr invalid in math mode on input line 125.
+
+
+LaTeX Warning: Command \textscr invalid in math mode on input line 125.
+
+Missing character: There is no ö in font zptmcm7t!
+
+Underfull \hbox (badness 10000) in paragraph at lines 135--137
 
  []
 
@@ -603,7 +601,7 @@ LaTeX Warning: Command \textscr invalid in math mode on input line 145.
 
 Missing character: There is no ö in font zptmcm7t!
 
-Overfull \hbox (10.00146pt too wide) in paragraph at lines 139--146
+Overfull \hbox (10.00046pt too wide) in paragraph at lines 138--146
 [][] 
  []
 
@@ -612,7 +610,27 @@ Underfull \hbox (badness 10000) in paragraph at lines 148--150
 
  []
 
-(./main.bbl
+
+Underfull \hbox (badness 10000) in paragraph at lines 154--155
+
+ []
+
+
+Overfull \hbox (10.00185pt too wide) in paragraph at lines 156--169
+[][] 
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 156--169
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 170--171
+
+ []
+
+[2] (./main.bbl
 Missing character: There is no Ã in font ptmrc7t!
 Missing character: There is no ¤ in font ptmrc7t!
 Missing character: There is no Ã in font ptmrc7t!
@@ -621,30 +639,35 @@ Missing character: There is no Ã in font ptmrc7t!
 Missing character: There is no ¼ in font ptmrc7t!
 Missing character: There is no Ã in font ptmrc7t!
 Missing character: There is no ¶ in font ptmrc7t!
-) [2] (./main.aux) ) 
+) (./main.ent
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <8> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 2.
+) [3
+
+] (./main.aux) ) 
 Here is how much of TeX's memory you used:
- 10802 strings out of 493089
- 189447 string characters out of 6134842
+ 10821 strings out of 493089
+ 189659 string characters out of 6134842
  578389 words of memory out of 5000000
- 14121 multiletter control sequences out of 15000+600000
- 59574 words of font info for 136 fonts, out of 8000000 for 9000
+ 14135 multiletter control sequences out of 15000+600000
+ 65439 words of font info for 148 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  39i,9n,39p,10380b,923s stack positions out of 5000i,500n,10000p,200000b,80000s
-{/usr/local/texlive/2015/texmf-dist/fonts/enc/dvips/base/8r
-.enc}</usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.
-pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.p
-fb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb
-></usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb>
-</usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt9.pfb></
-usr/local/texlive/2015/texmf-dist/fonts/type1/public/doublestroke/dsrom10.pfb><
-/usr/local/texlive/2015/texmf-dist/fonts/type1/urw/symbol/usyr.pfb></usr/local/
-texlive/2015/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/20
-15/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2015/texmf-d
-ist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on main.pdf (2 pages, 104734 bytes).
+{/usr/local/texlive/2015/texmf-dist/fonts/enc/dvips/base/8r.enc
+}</usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb>
+</usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb><
+/usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></u
+sr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></us
+r/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt9.pfb></usr/
+local/texlive/2015/texmf-dist/fonts/type1/public/doublestroke/dsrom10.pfb></usr
+/local/texlive/2015/texmf-dist/fonts/type1/urw/symbol/usyr.pfb></usr/local/texl
+ive/2015/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2015/t
+exmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2015/texmf-dist/
+fonts/type1/urw/times/utmri8a.pfb>
+Output written on main.pdf (3 pages, 108521 bytes).
 PDF statistics:
- 52 PDF objects out of 1000 (max. 8388607)
- 37 compressed objects within 1 object stream
+ 55 PDF objects out of 1000 (max. 8388607)
+ 39 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 

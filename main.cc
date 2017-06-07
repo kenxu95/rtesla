@@ -9,7 +9,7 @@
 #define LENGTH_MESSAGE 500
 #define NUM_TRIALS 10000
 
-#define SCHEME_TYPE 1 // 0 for rTesla, 1 for Ecc
+#define SCHEME_TYPE 0 // 0 for rTesla, 1 for Ecc
 static string charset = "abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
 
 static char getRandomChar(default_random_engine& generator){
