@@ -1,0 +1,30 @@
+\begin{thebibliography}{1}
+
+\bibitem{rTesla}
+{\sc Akleylek, S., Bindel, N., Buchmann, J., Krämer, J., and Marson, G.~A.}
+\newblock An efficient lattice-based signature scheme with provably secure
+  instantiation.
+\newblock In {\em International Conference on Cryptology - AFRICACRYPT 2016\/}
+  (2016), A.~N. D.~Pointcheval, T.~Rachidi, Ed., Springer, pp.~44--60.
+
+\bibitem{Tesla}
+{\sc Alkim, E., Bindel, N., Buchmann, J., and Dagdelen, O.}
+\newblock Tesla: Tightly-secure efficient signatures from standard lattices.
+\newblock In {\em Cryptology ePrint Archive\/} (2015).
+
+\bibitem{faultAttacks}
+{\sc Bindel, N., Buchmann, J.~A., and Krämer, J.}
+\newblock Lattice-based signature schemes and their sensitivity to fault
+  attacks.
+\newblock In {\em IACR Cryptology ePrint Archive\/} (2016).
+
+\bibitem{encoding}
+{\sc Güneysu, T., Lyubashevsky, V., and Pöppelmann, T.}
+\newblock Practical lattice-based cryptography: A signature scheme for embedded
+  systems.
+\newblock In {\em Cryptographic Hardware and Embedded Systems -- CHES 2012:
+  14th International Workshop, Leuven, Belgium, September 9-12, 2012.
+  Proceedings\/} (Berlin, Heidelberg, 2012), E.~Prouff and P.~Schaumont, Eds.,
+  Springer Berlin Heidelberg, pp.~530--547.
+
+\end{thebibliography}

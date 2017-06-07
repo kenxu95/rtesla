@@ -1,0 +1,168 @@
+% TEMPLATE for Usenix papers, specifically to meet requirements of
+%  USENIX '05
+% originally a template for producing IEEE-format articles using LaTeX.
+%   written by Matthew Ward, CS Department, Worcester Polytechnic Institute.
+% adapted by David Beazley for his excellent SWIG paper in Proceedings,
+%   Tcl 96
+% turned into a smartass generic template by De Clarke, with thanks to
+%   both the above pioneers
+% use at your own risk.  Complaints to /dev/null.
+% make it two column with no page numbering, default is 10 point
+
+% Munged by Fred Douglis <douglis@research.att.com> 10/97 to separate
+% the .sty file from the LaTeX source template, so that people can
+% more easily include the .sty file into an existing document.  Also
+% changed to more closely follow the style guidelines as represented
+% by the Word sample file. 
+
+% Note that since 2010, USENIX does not require endnotes. If you want
+% foot of page notes, don't include the endnotes package in the 
+% usepackage command, below.
+
+% This version uses the latex2e styles, not the very ancient 2.09 stuff.
+\documentclass[letterpaper,twocolumn,10pt]{article}
+\usepackage{usenix,epsfig,endnotes, amssymb, dsfont, tipa, amsmath, listings}
+\usepackage{array, kantlipsum, tabularx, graphicx}
+
+\begin{document}
+
+%don't want date printed
+\date{}
+
+%make title bold and 14 pt font (Latex default is non-bold, 16 pt)
+\title{\Large \bf Implementation and Comparison of Lattice-Based Signature Scheme Ring-Tesla with ECSDA}
+
+%for single author (just remove % characters)
+\author{
+{\rm Kenneth Xu }\\
+  Stanford University
+}
+
+\maketitle
+
+% Use the following at camera-ready time to suppress page numbers.
+% Comment it out when you first submit the paper for review.
+\thispagestyle{empty}
+
+
+\subsection*{Abstract}
+In search of efficient post-quantum alternative signature schemes, lattice-based schemes like BLISS and GLP have become promising fields of research. In this paper we provide an open-source implementation of the Ring-TESLA scheme \cite{rTesla}, which is based on the TESLA signature scheme by Alkim et al. \cite{Tesla}. Ring-TESLA is not only as efficient as the BLISS and GLIP schemes, but also has provably secure instantiation.
+
+\section{Introduction}
+Our implementation closely follows the description provided by Akleylet et al. 2016. Ring-TESLA has a tight security reduction from the R-LWE problem. As long as R-LWE is computationally hard, Ring-Tesla is unforgeable against the chosen-message attack. \cite{rTesla}
+
+\subsection{Advantages over BLISS and GLP}
+Ring-Tesla has a stronger security argument since it achieves both good performance with provably secure instantiation, while BLISS and GLP can only achieve one or the other. Provably secure instantiation means parameters are chosen according to the security reduction \cite{rTesla}. \\
+Moreover, Ring-Tesla uses uniform-sampling during signature generation, unlike BLISS, which uses Gaussian-sampling, generally assumed to be vulnerable to timing attacks. Comparing the resilience of BLISS, GLP, and Ring-TESLA to fault attacks in Bindel et al. 2016 \cite{faultAttacks} found that the Ring-TESLA scheme was sensitive to a strict subset of fault attacks affecting the BLISS and GLP.
+
+\subsection{Security Issues}
+
+
+\section{Ring-Tesla Signature Scheme}
+Ring-Tesla is parameterized by a number of integers: $n, \omega, d, B, q, U, L, \kappa$ and the security parameter $\lambda$ where $n > \kappa > \lambda$. $n$ is a positive power of $2$ and $q$ is a prime where $q = 1 (\mod 2n)$. \\
+The quotient ring of polynomials we work with is defined as $\textscr{R}_q = \mathds{Z}_q[x] / (x^n + 1)$ - in other words, all polynomials of degree up to $n-1$ with coefficients in the range $(-\frac{q}{2}, \frac{q}{2})$.
+The signature scheme also uses a Gaussian distribution $D_{\sigma}$ (with standard deviation $\sigma$), a Hash function $H : {0, 1}^* \rightarrow ^\kappa$, and an encoding function $F$ which maps the binary output of $H$ to a vector of length $n$ and weight $\omega$. We implemented a similar encoding scheme as found in Gneysu et al. \cite{encoding}\\
+
+We provide a mathematical overview of the Ring-Tesla algorithm below:
+
+\subsection{Globals}
+$a_1$ and $a_2$ are global polynomials uniformly sampled from $\textscr{R}_q$.
+
+\subsection{Key Generation}
+The pseudocode below is pulled from Akleylet et al. \cite{rTesla}
+{\tt \small
+  \begin{lstlisting}[mathescape, columns=flexible]
+    KeyGen($1^\lambda$;$a_1$,$a_2$):
+      s,$e_1$,$e_2 \rightarrow D_{\sigma}^n$ 
+      If checkE($e_1$) = 0 $\vee$ checkE($e_2$) = 0:
+        Restart
+      $t_1 \rightarrow a_1 s$ + $e_1$ (mod q) 
+      $t_2 \rightarrow a_2 s$ + $e_2$ (mod q) 
+      sk $\rightarrow$ ($s$,$e_1$,$e_2$)
+      pk $\rightarrow$ ($t_1$,$t_2$)
+      return (sk, pk)
+  \end{lstlisting} 
+}
+
+We first sample three polynomials $s$, $e_1$, and $e_2$ from Gaussian distribution $D_{\sigma}$. Each polynomial requires $n$ samples, one for each degree from $0$ to $n-1$.\\
+A polynomial passes the checkE function if the sum of its $\omega$ largest coefficients is less than $L$.\\
+
+\subsection{Sign}
+The pseudocode below is pulled from Akleylet et al. \cite{rTesla}
+{\tt \small
+  \begin{lstlisting}[mathescape, columns=flexible]
+    Sign($\mu$;$a_1$,$a_2$,s,$e_1$,$e_2$):
+      y $\rightarrow$ $R_{q, [B]}$
+      $v_1$ $\rightarrow$ $a_1$y (mod q)
+      $v_2$ $\rightarrow$ $a_2$y (mod q)
+      c' $\rightarrow$ H$\bigg( \lfloor v_1 \rceil_{d,q}$, $\lfloor v_2 \rceil_{d,q}\bigg)$
+      c $\rightarrow$ F(c')
+      z $\rightarrow$ y + sc
+
+      # Rejection sampling
+      $w_1$ $\rightarrow$ $v_1$ - $e_1$c (mod q)
+      $w_2$ $\rightarrow$ $v_2$ - $e_2$c (mod q)     
+      If $[w_1]_{2^d}$,$[w_2]_{2^d}$$\notin$$\textscr{R}_{2^d - L}$ $\vee$ $z \notin \textscr{R}_{B - U}$:
+        Restart
+      Return (z, c')
+  \end{lstlisting}
+}
+
+  First, polynomial $y$ is uniformly sampled from $R_q$, with additional constraints on the size of coefficients. Every coefficient in $y$ must lie in the range $[-B, B]$ where $B \in [0, \frac{q}{2}]$. \\
+  We hash the concatenation of the rounded values of $v_1$ and $v_2$ and the message $\mu$ (to sign). This rounding function is defined the following way: $\lfloor x \rceil_{d, q} = \lfloor x (\mod q) \rceil_{d}$ and $\lfloor y \rceil_{d} = (y - [y]_{2^d}) / 2^d$, where $[y]_{2^d}$ is the mod representation of $y$ in the range $[-2^{d-1}, 2^{d-1}]$ and $/ 2^d$ defines a quotient group.\\
+  The encoding function is applied right after hashing to produce the signature $(z, c)$.\\
+  Before returning, however, we apply rejection sampling by making sure the coefficients of polynomials $w_1$, $w_2$, and $z$ are not too large.
+
+\subsection{Verify}
+The pseudocode below is pulled from Akleylet et al. \cite{rTesla} and is similar to the reverse of sign().
+
+{\tt \small
+  \begin{lstlisting}[mathescape, columns=flexible]
+    Verify($\mu$;z,c';$a_1$,$a_2$,$t_1$,$t_2$):
+      c $\rightarrow$ F(c')
+      $w_1'$ $\rightarrow$ $a_1$z - $t_1$c (mod q)
+      $w_2'$ $\rightarrow$ $a_2$z - $t_2$c (mod q)     
+      c'' $\rightarrow$ H$\bigg( \lfloor w_1' \rceil_{d,q}$, $\lfloor w_2' \rceil_{d,q}\bigg)$
+      If c'=c'' $\wedge$ z $\in \textscr{R}_{B - U}$:
+        Return 1
+      Else: Return 0
+  \end{lstlisting}
+}
+
+\section{Implementation}
+We implemented the Ring-Tesla signature scheme in C++ and compared its speed with that of a ECDSA C++ implementation.
+
+\subsection{Selection of Parameters}
+We selected mostly the same provably secure parameters as Akleylet et al. \cite{rTesla} described, which theoretically provides $128$-bit security. \\
+We changed the value of $\omega$ from $19$ to $16$ for easier implementation. Below are our selected parameters:\\
+
+\resizebox{\columnwidth}{!}{
+\begin{tabular}{c | c c c c c c c c}
+  Security (bit) & $n$ & $\sigma$ & $\textscr{L}$ & $\omega$ & $\textscr{B}$ & $\textscr{U}$ & $d$ & $q$\\
+  \hline
+  $128$ & $512$ & $52$ & $2766$ & $16$ & $2^{22}$ - $1$ & $3173$ & $23$ & $39960577$
+\end{tabular}
+}
+
+\subsection{Code}
+Our implementation (along with benchmark tests) is available at: \\
+https://github.com/kenxu95/rtesla\\
+
+
+\section{Performance Comparison Results}
+TODO
+
+
+{\footnotesize \bibliographystyle{acm}
+\bibliography{main}}
+
+
+% \theendnotes
+
+\end{document}
+
+
+
+
+
+
