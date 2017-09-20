@@ -40,11 +40,13 @@ RingTesla::RingTesla() {
   // kappa = 256;
 
   generator.seed(timeSeed);
+  q_inv = 1 / (double) q;
 }
 
+
 vector<int> RingTesla::sampleZqPolynomial(bool useB){
-  int minDist = useB ? -1 * B : -1 * ceil(q / 2);
-  int maxDist = useB ? B : floor(q / 2);
+  int minDist = useB ? (-1 * (int) B) : -1 * ceil(q / 2);
+  int maxDist = useB ? ((int) B) : floor(q / 2);
 
   uniform_int_distribution<int> dist(minDist, maxDist);
 
@@ -56,11 +58,11 @@ vector<int> RingTesla::sampleZqPolynomial(bool useB){
 }
 
 /* Samples and returns the public polynomials a1 and a2.
- * Each polynomial is a member of ring group R_q and can be 
+ * Each polynomial is a member of ring group R_q and can be
  * represented as a single number. */
 void RingTesla::genPublic(){
   a1 = sampleZqPolynomial(false);
-  a2 = sampleZqPolynomial(false); 
+  a2 = sampleZqPolynomial(false);
 }
 
 /* Returns a polynomial of length n according to the discrete Gaussian distribution with
@@ -77,7 +79,7 @@ vector<int> RingTesla::sampleGaussianPolynomial(){
 /* Return false if polynomial e passes, true otherwise. */
 bool RingTesla::checkE(vector<int>& e){
   nth_element(e.begin(), e.begin() + w, e.end());
-  return accumulate(e.end() - w, e.end(), 0) > L;
+  return accumulate(e.end() - w, e.end(), 0) > (int) L;
 }
 
 int RingTesla::performModOnVal(int val, unsigned int magnitudeMod){
@@ -87,23 +89,40 @@ int RingTesla::performModOnVal(int val, unsigned int magnitudeMod){
 }
 
 /* Performs mod of q */
-void RingTesla::performMod(vector<int>& vec){
-  for(unsigned int i = 0; i < vec.size(); i++){
-    vec[i] = performModOnVal(vec[i], q / 2);
+void RingTesla::performModQ(vector<int>& vec){
+	double divider;
+	int divider_int;
+	for(unsigned int i = 0; i < vec.size(); i++){
+	divider = (double) vec[i] * q_inv;
+	divider_int = (int) round(divider);
+    vec[i] = vec[i] - (divider_int * q);
   }
+}
+
+int RingTesla::performModQOnLongVal(int64_t val){
+	double divider = (double) val * q_inv;
+	//int64_t divider_int = divider > 0 ? (int64_t) floor(divider) : (int64_t) ceil(divider);
+	int64_t  divider_int = (int64_t) round(divider);
+ return val - (divider_int * (int64_t)q);
 }
 
 /* Perform multiplication on two polynomials in the ring R/(x^n + 1) */
 vector<int> RingTesla::multiplyPolynomials(vector<int>& vec1, vector<int>& vec2){
-  vector<int> result(n, 0);
+if(vec1.size() != vec2.size())
+	cout << "Multiplication dimension error" << endl;
+  vector<int64_t> result(vec1.size(), 0);
   for(unsigned int i = 0; i < vec1.size(); i++){
     for(unsigned int j = 0; j < vec2.size(); j++){
-      int val = vec1[i] * vec2[j];
-      int index = (i + j) % n; 
+      int64_t val = (int64_t) vec1[i] * (int64_t) vec2[j];
+      int index = (i + j) % vec1.size();
       result[index] += val;
     }
   }
-  return result;
+  vector<int> res(vec1.size(), 0);
+  for(unsigned int i = 0; i < vec1.size(); i++){
+	  res[i] = performModQOnLongVal(result[i]);
+  }
+  return res;
 }
 
 /* Addition of two polynomials */
@@ -114,8 +133,12 @@ vector<int> RingTesla::addPolynomials(vector<int>& vec1, vector<int>& vec2){
 }
 
 vector<int> RingTesla::subtractPolynomials(vector<int>& vec1, vector<int>& vec2){
-  vector<int> result(n);
-  transform(vec1.begin(), vec1.end(), vec2.begin(), result.begin(), std::minus<int>());
+	if(vec1.size() != vec2.size())
+		cout << "Subtraction dimension error" << endl;
+	vector<int> result(vec1.size());
+    for(unsigned int i = 0; i < result.size(); i++){
+	  result[i] = vec1[i] - vec2[i];
+  }
   return result;
 }
 
@@ -123,7 +146,7 @@ vector<int> RingTesla::subtractPolynomials(vector<int>& vec1, vector<int>& vec2)
 vector<int> RingTesla::calculateT(vector<int>& a, vector<int>& s, vector<int>& e){
   vector<int> multResult = multiplyPolynomials(a, s); 
   vector<int> result = addPolynomials(multResult, e);
-  performMod(result);
+  performModQ(result);
   return result;
 }
 
@@ -147,8 +170,8 @@ void RingTesla::keyGen(){
 }
 
 bool RingTesla::checkW(vector<int>& w){
-  unsigned int magnitudeMod = 1 << (d - 1);
-  unsigned int magnitudeModCheck = (1 << (d - 1)) - L;
+  int magnitudeMod = 1 << (d - 1);
+  int magnitudeModCheck = (1 << (d - 1)) - L;
   for (unsigned int i = 0; i < w.size(); i++){
     int moddedW = performModOnVal(w[i], magnitudeMod); 
     if (abs(moddedW) > magnitudeModCheck){
@@ -159,9 +182,9 @@ bool RingTesla::checkW(vector<int>& w){
 }
 
 bool RingTesla::checkZ(vector<int>& z_vec){
-  unsigned int magnitude = B - U;
+  int magnitude0 = B - U;
   for (unsigned int i = 0; i < z_vec.size(); i++){
-    if (abs(z_vec[i]) > magnitude){
+    if (abs(z_vec[i]) > magnitude0){
       return false;
     }
   }
@@ -169,12 +192,12 @@ bool RingTesla::checkZ(vector<int>& z_vec){
 }
 
 vector<int> RingTesla::encoding(string hashResult){
-  unsigned int numIndexBits = (unsigned int)log2(n); /* is 9 */
-  unsigned int blockSize = kappa / w; /* is 16 */
+  int numIndexBits = (unsigned int)log2(n);
+  int blockSize = kappa / w;
 
   /* For each block, encode a single element in result */
   vector<int> result(n);
-  for(int i = 0; i < w; i++){
+  for(unsigned int i = 0; i < w; i++){
     string blockStr = hashResult.substr(i * (blockSize / 4), blockSize / 4); /* divide by 4 because hexadecimal */
     unsigned int x;
     std::stringstream ss;
@@ -189,20 +212,14 @@ vector<int> RingTesla::encoding(string hashResult){
   return result;
 }
 
-int RingTesla::roundVal(int val, unsigned int magnitudeMod){
-  int diff = val - performModOnVal(val, magnitudeMod);
-  return performModOnVal(diff, magnitudeMod);
-}
-
 string RingTesla::hash(string message, vector<int>& v1, vector<int>& v2){
   string toHash = message;
   for (unsigned int i = 0; i < v1.size(); i++){
-    toHash += to_string(roundVal(v1[i], 1 << (d - 1)));
+	  toHash += to_string(v1[i]>> d);
   }
   for (unsigned int i = 0; i < v2.size(); i++){
-    toHash += to_string(roundVal(v2[i], 1 << (d - 1))); 
+	  toHash += to_string(v2[i]>> d);
   }
-
   string hashResult = sha256(toHash);
   return hashResult;
 }
@@ -220,29 +237,26 @@ tuple<vector<int>, string> RingTesla::sign(string message){
 
     /* Calculate v1 and v2 */
     vector<int> v1 = multiplyPolynomials(a1, y);
-    performMod(v1);
+    performModQ(v1);
     vector<int> v2 = multiplyPolynomials(a2, y);
-    performMod(v2);
+    performModQ(v2);
 
-    /* TODO: Generate the ciphertext with the hash and encoding functions */
     c_prime = hash(message, v1, v2);
     vector<int> c = encoding(c_prime);
 
     /* Calculate z */
     vector<int> s_c = multiplyPolynomials(get<0>(sk), c);
     z = addPolynomials(y, s_c);
-
     /* Rejection Sampling */
-    vector<int> e1_c = multiplyPolynomials(get<1>(sk), get<0>(sk));
+    vector<int> e1_c = multiplyPolynomials(get<1>(sk), c);
     w1 = subtractPolynomials(v1, e1_c);
-    performMod(w1);
-    vector<int> e2_c = multiplyPolynomials(get<2>(sk), get<0>(sk));
+    performModQ(w1);
+    vector<int> e2_c = multiplyPolynomials(get<2>(sk), c);
     w2 = subtractPolynomials(v2, e2_c);
-    performMod(w2);
-
+    performModQ(w2);
+//    cout << checkW(w1) << checkW(w2) << checkZ(z) << endl;
   }while (!checkW(w1) || !checkW(w2) || !checkZ(z));
-
-  // cout << "sign:\t" << c_prime << endl;
+//  cout << "sign:\t" << c_prime << endl;
   return make_tuple(z, c_prime);
 }
 
@@ -254,22 +268,18 @@ bool RingTesla::verify(string message, vector<int>& z, string c_prime){
   vector<int> a1_z = multiplyPolynomials(a1, z);
   vector<int> t1_c = multiplyPolynomials(get<0>(pk), c);
   vector<int> w1 = subtractPolynomials(a1_z, t1_c);
-  performMod(w1);
+  performModQ(w1);
 
   vector<int> a2_z = multiplyPolynomials(a2, z);
   vector<int> t2_c = multiplyPolynomials(get<1>(pk), c);
   vector<int> w2 = subtractPolynomials(a2_z, t2_c);
-  performMod(w2); 
-
+  performModQ(w2);
 
   /* Calculate c_verify */
   string c_verify = hash(message, w1, w2);
-  // cout << "verify:\t" << c_verify << endl;
+//  cout << "verify:\t" << c_verify << endl;
   return (c_prime.compare(c_verify) == 0) && checkZ(z);
 }
-
-
-
 
 
 

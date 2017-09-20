@@ -21,6 +21,7 @@ private:
   unsigned int q;
   unsigned int lambda; // Security parameter, which is < kappa < length
   unsigned int kappa; // Output length of hash function
+  double q_inv;
 
   /* Random Number Generator */
   /* TODO: Is not necessarily cryptographically secure */
@@ -42,7 +43,8 @@ private:
   bool checkW(vector<int>& w); /* for signing */
   bool checkZ(vector<int>& z_vec);
   int performModOnVal(int val, unsigned int magnitudeMod);
-  void performMod(vector<int>& vec);
+  int performModQOnLongVal(int64_t val);
+  void performModQ(vector<int>& vec);
   int roundVal(int val, unsigned int magnitudeMod);
   vector<int> multiplyPolynomials(vector<int>& vec1, vector<int>& vec2);
   vector<int> subtractPolynomials(vector<int>& vec1, vector<int>& vec2); 

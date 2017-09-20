@@ -90,6 +90,7 @@ static void signAndVerifyBenchmarkTests(vector<string>& messages){
   for (unsigned int i = 0; i < verifyResults.size(); i++){
     if (!verifyResults[i]){
       isSound = false;
+	  cout << "verification nr. " << i << " failed." << endl;
     }
   }
   cout << "-----------------------------------------------------------" << endl;
